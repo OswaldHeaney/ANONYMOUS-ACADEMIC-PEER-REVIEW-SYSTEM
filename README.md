@@ -2,6 +2,10 @@
 
 A fully-featured FHEVM (Fully Homomorphic Encryption Virtual Machine) example demonstrating a privacy-preserving academic peer review system built with Zama's encryption technology. This standalone repository showcases best practices for FHEVM smart contract development, comprehensive testing patterns, and automated documentation generation.
 
+[ANONYMOUS ACADEMIC PEER REVIEW SYSTEM.mp4](https://streamable.com/y1exd7)
+
+[Live Demo](https://anonymous-academic-peer-review-syst.vercel.app/)
+
 ## 📋 Bounty Submission Overview
 
 This example submission includes:

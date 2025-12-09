@@ -1,0 +1,25 @@
+ANONYMOUS ACADEMIC PEER REVIEW SYSTEM - 1 MINUTE VIDEO VOICEOVER SCRIPT
+
+Welcome to the Anonymous Academic Peer Review System, a complete FHEVM example demonstrating privacy-preserving smart contracts using Zama's Fully Homomorphic Encryption technology.
+
+This is a standalone Hardhat-based project that implements a decentralized academic peer review platform where reviewers can submit encrypted evaluations completely anonymously. Paper authors can then decrypt only their own reviews, ensuring both anonymity and selective disclosure.
+
+Let's walk through the project setup. With just two commands, we compile the smart contracts and run the comprehensive test suite. Our project includes 40 professional tests that demonstrate both correct usage patterns and common pitfalls to avoid when working with encrypted data.
+
+The automation capabilities are impressive. We have TypeScript-based CLI tools for managing papers and reviews. You can submit papers, query available papers for review, and manage your submitted work all through simple command-line interfaces.
+
+The core implementation shows how to handle multiple encrypted values in a single transaction. Here's the critical pattern: when working with FHE, you must grant both permissions - the contract permission with allowThis, and the user permission with allow. This is essential for proper encryption handling.
+
+The project structure is clean and professional. We have separate directories for contracts, tests, deployment scripts, and interactive tasks. The package.json is fully configured with modern dependencies, ESLint, Prettier, and Solhint for code quality.
+
+Our implementation demonstrates several advanced FHEVM concepts: handling multiple encrypted inputs, implementing access control with encrypted data, validating encrypted values without revealing them, and enforcing academic integrity rules directly in the smart contract.
+
+This example includes 40 plus comprehensive tests showing both success and failure scenarios. Tests validate encrypted review submission, prevent self-reviews, block duplicate reviews, and ensure only authorized parties can decrypt sensitive data.
+
+The project is production-ready with professional tooling. We include TypeScript configuration, Hardhat deployment scripts, automated testing, code linting, and comprehensive documentation to help developers understand and extend the system.
+
+This submission fulfills all bounty requirements: a complete Hardhat project with automated scaffolding, production-quality smart contracts demonstrating multiple FHEVM concepts, comprehensive tests showing best practices and common pitfalls, professional deployment automation, and extensive documentation suitable for learning and reference.
+
+Built with Zama's FHEVM, this example showcases how to implement enterprise-grade privacy-preserving applications on the blockchain. It serves as a perfect reference implementation for developers building encrypted smart contracts.
+
+Thank you for reviewing this submission. We believe this demonstrates the future of privacy-preserving smart contracts and the power of Fully Homomorphic Encryption in building trustworthy decentralized applications.

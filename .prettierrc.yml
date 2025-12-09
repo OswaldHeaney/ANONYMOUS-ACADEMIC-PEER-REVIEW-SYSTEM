@@ -1,0 +1,15 @@
+bracketSpacing: true
+endOfLine: lf
+printWidth: 120
+proseWrap: preserve
+quoteProps: as-needed
+semi: true
+singleQuote: false
+tabWidth: 2
+trailingComma: es5
+useTabs: false
+overrides:
+  - files: "*.sol"
+    options:
+      parser: solidity-parse
+      printWidth: 120

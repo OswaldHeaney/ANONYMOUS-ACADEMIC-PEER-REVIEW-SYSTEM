@@ -1,19 +1,17 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: BSD-3-Clause-Clear
 pragma solidity ^0.8.24;
 
-import "@fhevm/solidity/contracts/FHE.sol";
+import {FHE, ebool, euint8, euint32} from "@fhevm/solidity/lib/FHE.sol";
+import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title AcademicEvaluation
  * @dev Anonymous academic paper evaluation system using Zama FHE
  * @notice This contract allows reviewers to submit encrypted evaluations for academic papers
  */
-contract AcademicEvaluation is Ownable, ReentrancyGuard {
-    using FHE for ebool;
-    using FHE for euint8;
-    using FHE for euint32;
+contract AcademicEvaluation is ZamaEthereumConfig, Ownable, ReentrancyGuard {
 
     // Encrypted evaluation data
     struct EncryptedEvaluation {
@@ -133,14 +131,26 @@ contract AcademicEvaluation is Ownable, ReentrancyGuard {
         evaluations[evaluationCount] = EncryptedEvaluation({
             paperId: paperId,
             reviewer: msg.sender,
-            recommendation: FHE.asBool(_recommendation), // Auto-encrypt boolean
-            originality: FHE.asEuint8(_originality),     // Auto-encrypt score
-            quality: FHE.asEuint8(_quality),             // Auto-encrypt score
-            clarity: FHE.asEuint8(_clarity),             // Auto-encrypt score
-            significance: FHE.asEuint8(_significance),   // Auto-encrypt score
+            recommendation: FHE.asEbool(_recommendation),  // Encrypt boolean
+            originality: FHE.asEuint8(_originality),       // Encrypt score
+            quality: FHE.asEuint8(_quality),               // Encrypt score
+            clarity: FHE.asEuint8(_clarity),               // Encrypt score
+            significance: FHE.asEuint8(_significance),     // Encrypt score
             comments: comments,
             timestamp: block.timestamp
         });
+
+        // Grant permissions for encrypted values
+        FHE.allowThis(evaluations[evaluationCount].recommendation);
+        FHE.allow(evaluations[evaluationCount].recommendation, msg.sender);
+        FHE.allowThis(evaluations[evaluationCount].originality);
+        FHE.allow(evaluations[evaluationCount].originality, msg.sender);
+        FHE.allowThis(evaluations[evaluationCount].quality);
+        FHE.allow(evaluations[evaluationCount].quality, msg.sender);
+        FHE.allowThis(evaluations[evaluationCount].clarity);
+        FHE.allow(evaluations[evaluationCount].clarity, msg.sender);
+        FHE.allowThis(evaluations[evaluationCount].significance);
+        FHE.allow(evaluations[evaluationCount].significance, msg.sender);
         
         // Update mappings
         reviewerEvaluations[msg.sender].push(evaluationCount);
@@ -158,55 +168,57 @@ contract AcademicEvaluation is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @dev Reveal encrypted recommendation for authorized parties (paper submitter or contract owner)
-     * @param evaluationId ID of the evaluation to reveal
-     * @return Decrypted recommendation boolean
+     * @dev Get encrypted recommendation for authorized parties (paper submitter or contract owner)
+     * @param evaluationId ID of the evaluation
+     * @return Encrypted recommendation (must be decrypted client-side)
+     * @notice Decryption happens client-side using fhevm.userDecryptEbool() with user's private key
      */
-    function revealRecommendation(uint256 evaluationId) 
-        external 
-        view 
-        returns (bool) 
+    function getEncryptedRecommendation(uint256 evaluationId)
+        external
+        view
+        returns (ebool)
     {
         require(evaluationId > 0 && evaluationId <= evaluationCount, "Invalid evaluation ID");
-        
+
         EncryptedEvaluation memory evaluation = evaluations[evaluationId];
         Paper memory paper = papers[evaluation.paperId];
-        
-        // Only paper submitter or contract owner can reveal
+
+        // Only paper submitter or contract owner can access
         require(
             msg.sender == paper.submitter || msg.sender == owner(),
-            "Not authorized to reveal this evaluation"
+            "Not authorized to access this evaluation"
         );
-        
-        return FHE.decrypt(evaluation.recommendation);
+
+        return evaluation.recommendation;
     }
 
     /**
-     * @dev Reveal encrypted scores for authorized parties
-     * @param evaluationId ID of the evaluation to reveal
-     * @return Decrypted scores (originality, quality, clarity, significance)
+     * @dev Get encrypted scores for authorized parties
+     * @param evaluationId ID of the evaluation
+     * @return Encrypted scores (must be decrypted client-side)
+     * @notice Decryption happens client-side using fhevm.userDecryptEuint()
      */
-    function revealScores(uint256 evaluationId) 
-        external 
-        view 
-        returns (uint8, uint8, uint8, uint8) 
+    function getEncryptedScores(uint256 evaluationId)
+        external
+        view
+        returns (euint8, euint8, euint8, euint8)
     {
         require(evaluationId > 0 && evaluationId <= evaluationCount, "Invalid evaluation ID");
-        
+
         EncryptedEvaluation memory evaluation = evaluations[evaluationId];
         Paper memory paper = papers[evaluation.paperId];
-        
-        // Only paper submitter or contract owner can reveal
+
+        // Only paper submitter or contract owner can access
         require(
             msg.sender == paper.submitter || msg.sender == owner(),
-            "Not authorized to reveal this evaluation"
+            "Not authorized to access this evaluation"
         );
-        
+
         return (
-            FHE.decrypt(evaluation.originality),
-            FHE.decrypt(evaluation.quality),
-            FHE.decrypt(evaluation.clarity),
-            FHE.decrypt(evaluation.significance)
+            evaluation.originality,
+            evaluation.quality,
+            evaluation.clarity,
+            evaluation.significance
         );
     }
 

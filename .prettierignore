@@ -1,0 +1,6 @@
+cache/
+artifacts/
+dist/
+types/
+node_modules/
+coverage/
